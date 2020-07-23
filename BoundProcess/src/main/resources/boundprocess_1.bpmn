@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1azga9o" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.0.0">
+  <bpmn:process id="Process_1q25qmu" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_1byyhf6</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_1byyhf6" sourceRef="StartEvent_1" targetRef="createWorkitem" />
+    <bpmn:sequenceFlow id="Flow_1qel6dl" sourceRef="createWorkitem" targetRef="autoAllocate" />
+    <bpmn:serviceTask id="autoAllocate" name="autoAllocate" camunda:class="AutoAllocationDelegate">
+      <bpmn:incoming>Flow_1qel6dl</bpmn:incoming>
+      <bpmn:outgoing>Flow_0o98x66</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="ProcessBound" name="ProcessBound" camunda:assignee="${performer}">
+      <bpmn:incoming>Flow_0o98x66</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ukieq1</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="createWorkitem" name="Create Workitem">
+      <bpmn:incoming>Flow_1byyhf6</bpmn:incoming>
+      <bpmn:outgoing>Flow_1qel6dl</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_024fq50" name="Any Query ?" default="Flow_1nj6aw4">
+      <bpmn:incoming>Flow_1ukieq1</bpmn:incoming>
+      <bpmn:outgoing>Flow_1nj6aw4</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1nj6aw4" name="Yes" sourceRef="Gateway_024fq50" targetRef="sendQuery" />
+    <bpmn:serviceTask id="sendQuery" name="Send Query">
+      <bpmn:incoming>Flow_1nj6aw4</bpmn:incoming>
+      <bpmn:outgoing>Flow_1h102pc</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="Event_1sh66hj">
+      <bpmn:incoming>Flow_1h102pc</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1h102pc" sourceRef="sendQuery" targetRef="Event_1sh66hj" />
+    <bpmn:intermediateThrowEvent id="Event_0fg3i0x" />
+    <bpmn:sequenceFlow id="Flow_0o98x66" sourceRef="autoAllocate" targetRef="ProcessBound" />
+    <bpmn:sequenceFlow id="Flow_1ukieq1" sourceRef="ProcessBound" targetRef="Gateway_024fq50" />
+    <bpmn:textAnnotation id="TextAnnotation_1lss8x6">
+      <bpmn:text>change this so a mial is being sent to processor mail id.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_1evb1yf" sourceRef="ProcessBound" targetRef="TextAnnotation_1lss8x6" />
+    <bpmn:textAnnotation id="TextAnnotation_1qmygbc">
+      <bpmn:text>allocator -- STATUS=NEW</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_129toq7" sourceRef="createWorkitem" targetRef="TextAnnotation_1qmygbc" />
+    <bpmn:textAnnotation id="TextAnnotation_1oz0gt4">
+      <bpmn:text>this code will decide a user name.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_1uoized" sourceRef="autoAllocate" targetRef="TextAnnotation_1oz0gt4" />
+    <bpmn:textAnnotation id="TextAnnotation_0cbqh8s">
+      <bpmn:text>send a mail to initiator, allocator</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_1dl7bxo" sourceRef="sendQuery" targetRef="TextAnnotation_0cbqh8s" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1q25qmu">
+      <bpmndi:BPMNShape id="TextAnnotation_1lss8x6_di" bpmnElement="TextAnnotation_1lss8x6">
+        <dc:Bounds x="690" y="1830" width="100" height="84" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1oz0gt4_di" bpmnElement="TextAnnotation_1oz0gt4">
+        <dc:Bounds x="530" y="1830" width="100" height="55" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0cbqh8s_di" bpmnElement="TextAnnotation_0cbqh8s">
+        <dc:Bounds x="970" y="1830" width="100" height="55" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1qmygbc_di" bpmnElement="TextAnnotation_1qmygbc">
+        <dc:Bounds x="147" y="2110" width="100" height="41" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1byyhf6_di" bpmnElement="Flow_1byyhf6">
+        <di:waypoint x="100" y="1939" />
+        <di:waypoint x="100" y="1919" />
+        <di:waypoint x="260" y="1919" />
+        <di:waypoint x="260" y="2010" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1qel6dl_di" bpmnElement="Flow_1qel6dl">
+        <di:waypoint x="310" y="2050" />
+        <di:waypoint x="470" y="2050" />
+        <di:waypoint x="470" y="2027" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1nj6aw4_di" bpmnElement="Flow_1nj6aw4">
+        <di:waypoint x="805" y="1957" />
+        <di:waypoint x="910" y="1957" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="829" y="159" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1h102pc_di" bpmnElement="Flow_1h102pc">
+        <di:waypoint x="1010" y="1957" />
+        <di:waypoint x="1041" y="1957" />
+        <di:waypoint x="1041" y="1987" />
+        <di:waypoint x="1112" y="1987" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0o98x66_di" bpmnElement="Flow_0o98x66">
+        <di:waypoint x="520" y="1987" />
+        <di:waypoint x="555" y="1987" />
+        <di:waypoint x="555" y="2017" />
+        <di:waypoint x="590" y="2017" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ukieq1_di" bpmnElement="Flow_1ukieq1">
+        <di:waypoint x="640" y="1947" />
+        <di:waypoint x="640" y="1790" />
+        <di:waypoint x="723" y="1790" />
+        <di:waypoint x="723" y="1957" />
+        <di:waypoint x="755" y="1957" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Gateway_024fq50_di" bpmnElement="Gateway_024fq50" isMarkerVisible="true">
+        <dc:Bounds x="755" y="1932" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="749" y="128" width="61" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0fg3i0x_di" bpmnElement="Event_0fg3i0x">
+        <dc:Bounds x="522" y="972" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0987opn_di" bpmnElement="ProcessBound">
+        <dc:Bounds x="590" y="1947" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_120bl16_di" bpmnElement="createWorkitem">
+        <dc:Bounds x="210" y="2010" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0g051g5_di" bpmnElement="autoAllocate">
+        <dc:Bounds x="420" y="1947" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="82" y="1939" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1sh66hj_di" bpmnElement="Event_1sh66hj">
+        <dc:Bounds x="1112" y="1969" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0slr30q_di" bpmnElement="sendQuery">
+        <dc:Bounds x="910" y="1917" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_1evb1yf_di" bpmnElement="Association_1evb1yf">
+        <di:waypoint x="668" y="1947" />
+        <di:waypoint x="691" y="1914" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1uoized_di" bpmnElement="Association_1uoized">
+        <di:waypoint x="501" y="1947" />
+        <di:waypoint x="549" y="1885" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_129toq7_di" bpmnElement="Association_129toq7">
+        <di:waypoint x="226" y="2090" />
+        <di:waypoint x="210" y="2110" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1dl7bxo_di" bpmnElement="Association_1dl7bxo">
+        <di:waypoint x="981" y="1917" />
+        <di:waypoint x="999" y="1885" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
