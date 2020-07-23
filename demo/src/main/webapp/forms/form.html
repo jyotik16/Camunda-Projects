@@ -1,0 +1,31 @@
+<strong>Here you would put the actual form to start the process</strong>
+
+<p>
+  You can use this form through Camunda Tasklist
+  by setting the formKey of a BPMN Start Event to:
+  <code>embedded:app:forms/form.html</code>
+</p>
+
+<form class="form-horizontal">
+  <div class="form-group">
+    <label class="control-label">Your Name</label>    
+      <input type="text" cam-variable-name="name" cam-variable-type="String"  name="name" class="form-control" >    
+    </div>
+    <div class="form-group">
+    <label class="control-label">Address</label>    
+      <input type="text" cam-variable-name="address" cam-variable-type="String"    name="address" class="form-control" />
+    
+    </div>
+    <div class="form-group">
+    <label class="control-label">Pancard Num</label>   
+      <input type="text" cam-variable-name="PancardNum" cam-variable-type="String"    name="PancardNum" class="form-control"  />    
+    </div>
+    <div class="form-group">
+    <label class="control-label">DOB</label>   
+     <input type="text" cam-variable-name="dob" cam-variable-type="String"  name="dob" class="form-control"  />        
+  </div>
+
+  <script cam-script type="text/form-script">
+  // custom JavaScript goes here
+  </script>
+</form>

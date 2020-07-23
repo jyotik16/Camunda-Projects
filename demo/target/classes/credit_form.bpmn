@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.7.1">
+  <bpmn:process id="demo" name="demo" isExecutable="true">
+    <bpmn:startEvent id="StartEvent" name="Process&#10;started">
+      <bpmn:outgoing>Flow_1jmeins</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_1jmeins" sourceRef="StartEvent" targetRef="Customer_fill_form" />
+    <bpmn:userTask id="Customer_fill_form" name="Customer fill form" camunda:formKey="embedded:app:forms/form.html">
+      <bpmn:incoming>Flow_1jmeins</bpmn:incoming>
+      <bpmn:outgoing>Flow_0qs3hoa</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_0qs3hoa" sourceRef="Customer_fill_form" targetRef="Validate_Form_data" />
+    <bpmn:exclusiveGateway id="CheckData" name="CheckData">
+      <bpmn:incoming>Flow_12ot2ua</bpmn:incoming>
+      <bpmn:outgoing>Flow_1d1bcdg</bpmn:outgoing>
+      <bpmn:outgoing>Flow_11ytlkz</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_12ot2ua" sourceRef="Validate_Form_data" targetRef="CheckData" />
+    <bpmn:sequenceFlow id="Flow_1d1bcdg" name="False" sourceRef="CheckData" targetRef="Mail_Rejection">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{Approved==false}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:serviceTask id="Mail_Rejection" name="Inform Customer By Mail about Reject Application" camunda:class="com.camunda.LoggerDelegate">
+      <bpmn:incoming>Flow_1d1bcdg</bpmn:incoming>
+      <bpmn:incoming>Flow_0j6j4vh</bpmn:incoming>
+      <bpmn:incoming>Manager_Reject</bpmn:incoming>
+      <bpmn:outgoing>Flow_15jswbj</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="Event_1j3tyfc" name="end process">
+      <bpmn:incoming>Flow_15jswbj</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_15jswbj" sourceRef="Mail_Rejection" targetRef="Event_1j3tyfc" />
+    <bpmn:userTask id="Validate_Form_data" name="Validate Form data">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="Approved" label="Approved" type="boolean" defaultValue="true" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0qs3hoa</bpmn:incoming>
+      <bpmn:outgoing>Flow_12ot2ua</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_11ytlkz" name="True" sourceRef="CheckData" targetRef="Fetch_CIBIL_Score">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{Approved==true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:serviceTask id="Fetch_CIBIL_Score" name="Fetch CIBIL Score" camunda:class="com.camunda.CalculateScore">
+      <bpmn:incoming>Flow_11ytlkz</bpmn:incoming>
+      <bpmn:outgoing>Flow_0c7wnjx</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="CheckScore" name="CheckScore">
+      <bpmn:incoming>Flow_0c7wnjx</bpmn:incoming>
+      <bpmn:outgoing>Flow_0j6j4vh</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1ju4jf2</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0tox339</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0c7wnjx" sourceRef="Fetch_CIBIL_Score" targetRef="CheckScore" />
+    <bpmn:sequenceFlow id="Flow_0j6j4vh" name="CIBIL &#60; 600" sourceRef="CheckScore" targetRef="Mail_Rejection">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{CIBIL&lt;600}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1ju4jf2" name="CIBIL &#62;700" sourceRef="CheckScore" targetRef="MailApproval">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{CIBIL&gt;700}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="end_Process" name="end Process">
+      <bpmn:incoming>Flow_0g8sf8s</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0g8sf8s" sourceRef="MailApproval" targetRef="end_Process" />
+    <bpmn:sequenceFlow id="Flow_0tox339" name="CIBIL &#62;600 &#38;&#38; CIBIL &#60;700" sourceRef="CheckScore" targetRef="Manager_Approval">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{CIBIL &gt;600 &amp;&amp; CIBIL &lt;700}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:exclusiveGateway id="Gateway_07yhden" name="Check Manager Approval">
+      <bpmn:incoming>Flow_1uig1b2</bpmn:incoming>
+      <bpmn:outgoing>Manager_Reject</bpmn:outgoing>
+      <bpmn:outgoing>Manager_Approved</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1uig1b2" sourceRef="Manager_Approval" targetRef="Gateway_07yhden" />
+    <bpmn:sequenceFlow id="Manager_Reject" name="Manager Reject" sourceRef="Gateway_07yhden" targetRef="Mail_Rejection">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{ManagerApproval==false}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Manager_Approved" name="Manager Approved" sourceRef="Gateway_07yhden" targetRef="MailApproval">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{ManagerApproval==true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:serviceTask id="MailApproval" name="Inform Customer By Mail about Approval" camunda:class="com.camunda.MailApproval">
+      <bpmn:incoming>Flow_1ju4jf2</bpmn:incoming>
+      <bpmn:incoming>Manager_Approved</bpmn:incoming>
+      <bpmn:outgoing>Flow_0g8sf8s</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="Manager_Approval" name="Manager Approval">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="ManagerApproval" label="ManagerApproval" type="boolean" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0tox339</bpmn:incoming>
+      <bpmn:outgoing>Flow_1uig1b2</bpmn:outgoing>
+    </bpmn:userTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="demo">
+      <bpmndi:BPMNEdge id="Flow_10fe2yt_di" bpmnElement="Manager_Approved">
+        <di:waypoint x="585" y="640" />
+        <di:waypoint x="430" y="640" />
+        <di:waypoint x="430" y="430" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="484" y="606" width="47" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_19zrtve_di" bpmnElement="Manager_Reject">
+        <di:waypoint x="635" y="640" />
+        <di:waypoint x="790" y="640" />
+        <di:waypoint x="790" y="160" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="673" y="622" width="79" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1uig1b2_di" bpmnElement="Flow_1uig1b2">
+        <di:waypoint x="610" y="570" />
+        <di:waypoint x="610" y="615" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0tox339_di" bpmnElement="Flow_0tox339">
+        <di:waypoint x="610" y="415" />
+        <di:waypoint x="610" y="490" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="613" y="436" width="74" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0g8sf8s_di" bpmnElement="Flow_0g8sf8s">
+        <di:waypoint x="380" y="390" />
+        <di:waypoint x="308" y="390" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ju4jf2_di" bpmnElement="Flow_1ju4jf2">
+        <di:waypoint x="585" y="390" />
+        <di:waypoint x="480" y="390" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="505" y="372" width="56" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0j6j4vh_di" bpmnElement="Flow_0j6j4vh">
+        <di:waypoint x="635" y="390" />
+        <di:waypoint x="750" y="390" />
+        <di:waypoint x="750" y="160" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="663" y="372" width="59" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0c7wnjx_di" bpmnElement="Flow_0c7wnjx">
+        <di:waypoint x="610" y="320" />
+        <di:waypoint x="610" y="365" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_11ytlkz_di" bpmnElement="Flow_11ytlkz">
+        <di:waypoint x="610" y="145" />
+        <di:waypoint x="610" y="240" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="614" y="190" width="23" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_15jswbj_di" bpmnElement="Flow_15jswbj">
+        <di:waypoint x="800" y="120" />
+        <di:waypoint x="872" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1d1bcdg_di" bpmnElement="Flow_1d1bcdg">
+        <di:waypoint x="635" y="120" />
+        <di:waypoint x="700" y="120" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="654" y="102" width="28" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_12ot2ua_di" bpmnElement="Flow_12ot2ua">
+        <di:waypoint x="520" y="120" />
+        <di:waypoint x="585" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0qs3hoa_di" bpmnElement="Flow_0qs3hoa">
+        <di:waypoint x="360" y="120" />
+        <di:waypoint x="420" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1jmeins_di" bpmnElement="Flow_1jmeins">
+        <di:waypoint x="209" y="120" />
+        <di:waypoint x="260" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent">
+        <dc:Bounds x="173" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="171" y="138" width="40" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1jdf714_di" bpmnElement="Customer_fill_form">
+        <dc:Bounds x="260" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0oyycyu_di" bpmnElement="CheckData" isMarkerVisible="true">
+        <dc:Bounds x="585" y="95" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="582" y="71" width="55" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_17wqbks_di" bpmnElement="Mail_Rejection">
+        <dc:Bounds x="700" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1j3tyfc_di" bpmnElement="Event_1j3tyfc">
+        <dc:Bounds x="872" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="860" y="145" width="61" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_03b5dce_di" bpmnElement="Validate_Form_data">
+        <dc:Bounds x="420" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_18vp3qn_di" bpmnElement="Fetch_CIBIL_Score">
+        <dc:Bounds x="560" y="240" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1tzw8wj_di" bpmnElement="CheckScore" isMarkerVisible="true">
+        <dc:Bounds x="585" y="365" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="579" y="333" width="61" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_15gf0sa_di" bpmnElement="end_Process">
+        <dc:Bounds x="272" y="372" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="259" y="415" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_07yhden_di" bpmnElement="Gateway_07yhden" isMarkerVisible="true">
+        <dc:Bounds x="585" y="615" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="571" y="672" width="79" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1dnmtqb_di" bpmnElement="MailApproval">
+        <dc:Bounds x="380" y="350" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1ecu6fj_di" bpmnElement="Manager_Approval">
+        <dc:Bounds x="560" y="490" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
