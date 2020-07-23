@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0n5i88k" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.7.1">
+  <bpmn:process id="CreateUsers" name="CreateUsers" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1" name="START">
+      <bpmn:outgoing>Flow_0b320zu</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0b320zu" sourceRef="StartEvent_1" targetRef="Creat5Users" />
+    <bpmn:sequenceFlow id="Flow_1cnquyg" sourceRef="Creat5Users" targetRef="Task-CheckUsersCreatedOnAdmin" />
+    <bpmn:endEvent id="Event_0pikt6p" name="END">
+      <bpmn:incoming>Flow_0dw3pdi</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="Creat5Users" name="Creat5Users" camunda:class="com.camunda.demo.SimpleDemo.Create5Users">
+      <bpmn:incoming>Flow_0b320zu</bpmn:incoming>
+      <bpmn:outgoing>Flow_1cnquyg</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="Task-CheckUsersCreatedOnAdmin" name="Task-CheckUsersCreatedOnAdmin" camunda:assignee="demo">
+      <bpmn:incoming>Flow_1cnquyg</bpmn:incoming>
+      <bpmn:outgoing>Flow_0aqgfv7</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_0aqgfv7" sourceRef="Task-CheckUsersCreatedOnAdmin" targetRef="DeleteCreatedUsers" />
+    <bpmn:serviceTask id="DeleteCreatedUsers" name="DeleteCreatedUsers" camunda:class="com.camunda.demo.SimpleDemo.DeleteUser">
+      <bpmn:incoming>Flow_0aqgfv7</bpmn:incoming>
+      <bpmn:outgoing>Flow_079y580</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_079y580" sourceRef="DeleteCreatedUsers" targetRef="CheckUsersOnAdmin" />
+    <bpmn:userTask id="CheckUsersOnAdmin" name="CheckUsersOnAdmin">
+      <bpmn:incoming>Flow_079y580</bpmn:incoming>
+      <bpmn:outgoing>Flow_0dw3pdi</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_0dw3pdi" sourceRef="CheckUsersOnAdmin" targetRef="Event_0pikt6p" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="CreateUsers">
+      <bpmndi:BPMNEdge id="Flow_0dw3pdi_di" bpmnElement="Flow_0dw3pdi">
+        <di:waypoint x="650" y="300" />
+        <di:waypoint x="650" y="372" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_079y580_di" bpmnElement="Flow_079y580">
+        <di:waypoint x="650" y="159" />
+        <di:waypoint x="650" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0aqgfv7_di" bpmnElement="Flow_0aqgfv7">
+        <di:waypoint x="540" y="119" />
+        <di:waypoint x="600" y="119" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1cnquyg_di" bpmnElement="Flow_1cnquyg">
+        <di:waypoint x="370" y="119" />
+        <di:waypoint x="440" y="119" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0b320zu_di" bpmnElement="Flow_0b320zu">
+        <di:waypoint x="208" y="119" />
+        <di:waypoint x="270" y="119" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Activity_0g3aqsz_di" bpmnElement="Creat5Users">
+        <dc:Bounds x="270" y="79" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_06w44gv_di" bpmnElement="Task-CheckUsersCreatedOnAdmin">
+        <dc:Bounds x="440" y="79" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="172" y="101" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="172" y="144" width="36" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0gxc4jn_di" bpmnElement="DeleteCreatedUsers">
+        <dc:Bounds x="600" y="79" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0xkh5k3_di" bpmnElement="CheckUsersOnAdmin">
+        <dc:Bounds x="600" y="220" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0pikt6p_di" bpmnElement="Event_0pikt6p">
+        <dc:Bounds x="632" y="372" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="638" y="415" width="24" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
