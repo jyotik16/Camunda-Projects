@@ -10,7 +10,7 @@
 
   <properties>
     <version.camunda>7.12.0</version.camunda>
-    <version.spring>4.3.24.RELEASE</version.spring>
+    <version.spring>5.3.18</version.spring>
     <version.resteasy-jaxrs>3.0.8.Final</version.resteasy-jaxrs>
     <version.h2>1.3.171</version.h2>
     <maven.compiler.source>1.7</maven.compiler.source>
